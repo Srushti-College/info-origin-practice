@@ -24,17 +24,24 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
                     sh 'echo $PASS | docker login -u $USER --password-stdin'
-                    sh 'docker push $IMAGE_NAME:$TAG'
+                    sh 'docker push  srushti22/flask-app:latest'
                 }
             }
         }
 
-        stage('Deploy Container') {
+        stage('Update K8s Manifest') {
             steps {
                 sh '''
-                docker stop python-app || true
-                docker rm python-app || true
-                docker run -d -p 5000:5000 --name python-app srushti22/flask-app:latest
+                sed -i "s|image: .*|image:  srushti22/flask-app:latest|g" deployment.yaml
+                '''
+            }
+        }
+
+        stage('Deploy to Minikube') {
+            steps {
+                sh '''
+                kubectl apply -f deployment.yaml
+                kubectl apply -f service.yaml
                 '''
             }
         }
