@@ -10,7 +10,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git 'https://github.com/Srushti-College/info-origin-practice.git
+                git 'https://github.com/Srushti-College/info-origin-practice.git'
             }
         }
 
