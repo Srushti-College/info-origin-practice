@@ -4,6 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = "srushti22/flask-app"
         TAG = "latest"
+        KUBECONFIG = "/var/lib/jenkins/.kube/config"
     }
 
     stages {
@@ -16,7 +17,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t srushti22/flask-app:latest .'
+                sh 'docker build -t $IMAGE_NAME:$TAG .'
             }
         }
 
@@ -24,7 +25,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
                     sh 'echo $PASS | docker login -u $USER --password-stdin'
-                    sh 'docker push  srushti22/flask-app:latest'
+                    sh 'docker push $IMAGE_NAME:$TAG'
                 }
             }
         }
@@ -32,7 +33,7 @@ pipeline {
         stage('Update K8s Manifest') {
             steps {
                 sh '''
-                sed -i "s|image: .*|image:  srushti22/flask-app:latest|g" deployment.yaml
+                sed -i "s|image: .*|image: $IMAGE_NAME:$TAG|g" deployment.yaml
                 '''
             }
         }
