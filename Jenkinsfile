@@ -10,13 +10,13 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git 'https://github.com/Srushti-College/info-origin-practice.git'
+                git branch: 'main', url: 'https://github.com/Srushti-College/info-origin-practice.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t  python-app :latest .'
+                sh 'docker build -t $IMAGE_NAME:$TAG .'
             }
         }
 
@@ -24,7 +24,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
                     sh 'echo $PASS | docker login -u $USER --password-stdin'
-                    sh 'docker push  python-app :latest'
+                    sh 'docker push $IMAGE_NAME:$TAG'
                 }
             }
         }
@@ -34,7 +34,7 @@ pipeline {
                 sh '''
                 docker stop python-app || true
                 docker rm python-app || true
-                docker run -d -p 5000:5000 --name python-app  python-app :latest
+                docker run -d -p 5000:5000 --name python-app $IMAGE_NAME:$TAG
                 '''
             }
         }
