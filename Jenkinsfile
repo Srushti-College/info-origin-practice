@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "srushti22/python-app"
+        IMAGE_NAME = "srushti22/flask-app"
         TAG = "latest"
     }
 
@@ -16,7 +16,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME:$TAG .'
+                sh 'docker build -t srushti22/flask-app:latest .'
             }
         }
 
@@ -34,7 +34,7 @@ pipeline {
                 sh '''
                 docker stop python-app || true
                 docker rm python-app || true
-                docker run -d -p 5000:5000 --name python-app $IMAGE_NAME:$TAG
+                docker run -d -p 5000:5000 --name python-app srushti22/flask-app:latest
                 '''
             }
         }
