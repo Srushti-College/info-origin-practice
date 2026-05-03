@@ -42,7 +42,7 @@ pipeline {
             steps {
                 sh '''
                 kubectl apply -f deployment.yaml --validate=false
-                kubectl apply -f service.yaml --validate=false
+                kubectl apply -f service.yml --validate=false
                 '''
             }
         }
